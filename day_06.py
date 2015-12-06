@@ -156,7 +156,11 @@ def part_one():
     with open("inputs/day_06_input.txt", "r") as input_file:
         array = np.zeros((1000, 1000), dtype=np.bool)
         for instruction in input_file:
-            array = follow_instruction(instruction, array)
+            command, sx, sy = parse_instruction(instruction)
+            if command in ("turn off", "turn on"):
+                array[sx, sy] = ["turn off", "turn on"].index(command)
+            elif command == "toggle":
+                array[sx, sy] ^= 1
 
     print("{} lights on".format(array.sum()))
 
@@ -165,7 +169,11 @@ def part_two():
     with open("inputs/day_06_input.txt", "r") as input_file:
         array = np.zeros((1000, 1000))
         for instruction in input_file:
-            array = follow_elvish(instruction, array)
+            command, sx, sy = parse_instruction(instruction)
+            array[sx, sy] += {"turn off": -1,
+                              "turn on": 1,
+                              "toggle": 2}[command]
+            array[array < 0] = 0
 
     print("{} total brightness".format(array.sum()))
 
