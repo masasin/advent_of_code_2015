@@ -64,27 +64,27 @@ import numpy as np
 PATTERN = re.compile(r"([\w\s]+)\s(\d+),(\d+) through (\d+),(\d+)")
 
 
-def test_interpret_instruction():
-    assert interpret_instruction("turn on 0,0 through 999,999") == (
+def test_parse_instruction():
+    assert parse_instruction("turn on 0,0 through 999,999") == (
         "turn on",
-        [0, 1000],
-        [0, 1000],
+        slice(0, 1000),
+        slice(0, 1000),
     )
-    assert interpret_instruction("toggle 0,0 through 999,0") == (
+    assert parse_instruction("toggle 0,0 through 999,0") == (
         "toggle",
-        [0, 1000],
-        [0, 1],
+        slice(0, 1000),
+        slice(0, 1),
     )
-    assert interpret_instruction("turn off 499,499 through 500,500") == (
+    assert parse_instruction("turn off 499,499 through 500,500") == (
         "turn off",
-        [499, 501],
-        [499, 501],
+        slice(499, 501),
+        slice(499, 501),
     )
 
 
 def test_follow_instruction():
-    orig_array = np.array([[False]*1000]*1000)
-    true_array = np.array([[True]*1000]*1000)
+    orig_array = np.zeros((1000, 1000), dtype=np.bool)
+    true_array = np.ones((1000, 1000), dtype=np.bool)
 
     new_array = follow_instruction("turn on 0,0 through 999,999", orig_array)
     assert new_array.all()
@@ -93,26 +93,15 @@ def test_follow_instruction():
 
     new_array = follow_instruction("turn off 499,499 through 500,500",
                                    orig_array)
-    assert not new_array[499][499]
-    assert not new_array[499][500]
-    assert not new_array[500][499]
-    assert not new_array[500][500]
+    assert not new_array[499:500, 499:500].any()
     new_array = follow_instruction("turn off 499,499 through 500,500",
                                    true_array)
-    assert not new_array[499][499]
-    assert not new_array[499][500]
-    assert not new_array[500][499]
-    assert not new_array[500][500]
+    assert not new_array[499:500, 499:500].any()
 
     new_array = follow_instruction("toggle 499,499 through 500,500", orig_array)
-    assert new_array[499][499]
-    assert new_array[499][500]
-    assert new_array[500][499]
+    assert new_array[499:500, 499:500].all()
     new_array = follow_instruction("toggle 499,499 through 500,500", true_array)
-    assert not new_array[499][499]
-    assert not new_array[499][500]
-    assert not new_array[500][499]
-    assert not new_array[500][500]
+    assert not new_array[499:500, 499:500].any()
 
     new_array = follow_instruction("toggle 0,0 through 999,0", orig_array)
     assert new_array[:, 0].all()
@@ -135,51 +124,41 @@ def test_follow_elvish():
     assert new_array.sum() == 2000000
 
 
-def interpret_instruction(instruction):
+def parse_instruction(instruction):
     match = re.search(PATTERN, instruction)
-    command, start_x, start_y, end_x, end_y = match.groups()
-    return command, [int(start_x), int(end_x)+1], [int(start_y), int(end_y)+1]
+    command, xi, yi, xf, yf = match.groups()
+    return command, slice(int(xi), int(xf)+1), slice(int(yi), int(yf)+1)
 
 
 def follow_instruction(instruction, array):
-    command, [xi, xf], [yi, yf] = interpret_instruction(instruction)
+    command, sx, sy = parse_instruction(instruction)
     new_array = array.copy()
 
-    if command == "turn on":
-        new_array[xi:xf, yi:yf] = True
-    elif command == "turn off":
-        new_array[xi:xf, yi:yf] = False
+    if command in ("turn off", "turn on"):
+        new_array[sx, sy] = ["turn off", "turn on"].index(command)
     elif command == "toggle":
-        new_array[xi:xf, yi:yf] = ~array[xi:xf, yi:yf]
-    else:
-        raise ValueError("Unknown input")
+        new_array[sx, sy] ^= 1
 
     return new_array
 
 
 def follow_elvish(instruction, array):
-    command, [xi, xf], [yi, yf] = interpret_instruction(instruction)
+    command, sx, sy = parse_instruction(instruction)
     new_array = array.copy()
 
-    if command == "turn on":
-        new_array[xi:xf, yi:yf] += 1
-    elif command == "turn off":
-        new_array[xi:xf, yi:yf] = np.clip(array[xi:xf, yi:yf] - 1, 0, np.inf)
-    elif command == "toggle":
-        new_array[xi:xf, yi:yf] += 2
-    else:
-        raise ValueError("Unknown input")
+    new_array[sx, sy] += {"turn off": -1, "turn on": 1, "toggle": 2}[command]
+    new_array[new_array < 0] = 0
 
     return new_array
 
 
 def part_one():
     with open("inputs/day_06_input.txt", "r") as input_file:
-        array = np.array([[False]*1000]*1000)
+        array = np.zeros((1000, 1000), dtype=np.bool)
         for instruction in input_file:
             array = follow_instruction(instruction, array)
 
-    print("{} lights on".format(sum(i for row in array for i in row)))
+    print("{} lights on".format(array.sum()))
 
 
 def part_two():
@@ -188,7 +167,7 @@ def part_two():
         for instruction in input_file:
             array = follow_elvish(instruction, array)
 
-    print("{} total brightness".format(sum(i for row in array for i in row)))
+    print("{} total brightness".format(array.sum()))
 
 
 def main():
