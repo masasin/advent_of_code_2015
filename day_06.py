@@ -179,8 +179,22 @@ def part_two():
 
 
 def main():
-    part_one()
-    part_two()
+    with open("inputs/day_06_input.txt", "r") as input_file:
+        grid = np.zeros((1000, 1000), dtype=np.bool)
+        elvish = np.zeros((1000, 1000))
+        for instruction in input_file:
+            command, sx, sy = parse_instruction(instruction)
+            if command in ("turn off", "turn on"):
+                grid[sx, sy] = ["turn off", "turn on"].index(command)
+            elif command == "toggle":
+                grid[sx, sy] ^= 1
+            elvish[sx, sy] += {"turn off": -1,
+                               "turn on": 1,
+                               "toggle": 2}[command]
+            elvish[elvish < 0] = 0
+
+    print("{} lights on".format(grid.sum()))
+    print("{} total brightness".format(elvish.sum()))
 
 
 if __name__ == "__main__":
