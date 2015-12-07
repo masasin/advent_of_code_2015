@@ -50,15 +50,15 @@ How many total feet of ribbon should they order?
 """
 
 
-def test_get_total_area():
-    assert get_total_area("2x3x4") == 58
-    assert get_total_area("1x1x10") == 43
-
-
 def test_parse():
     assert parse("2x3x4") == [2, 3, 4]
     assert parse("1x1x10") == [1, 1, 10]
     assert parse("5x4x3") == [3, 4, 5]
+
+
+def test_get_total_area():
+    assert get_total_area("2x3x4") == 58
+    assert get_total_area("1x1x10") == 43
 
 
 def test_get_ribbon_length():
@@ -66,18 +66,63 @@ def test_get_ribbon_length():
     assert get_ribbon_length("1x1x10") == 14
 
 
+def parse(box_size):
+    """
+    Return the dimensions of the box.
+
+    Parameters
+    ----------
+    box_size : str
+        The size of the box, represented as axbxc, where a, b, and c are the
+        lengths of one side of the box, in feet.
+
+    Returns
+    -------
+    3-tuple of float
+        The lengths of each side of the box, from smallest to largest.
+
+    """
+    return sorted(int(i) for i in box_size.split("x"))
+
+
 def get_total_area(box_size):
+    """
+    Return the total area of wrapping paper required.
+
+    Parameters
+    ----------
+    box_size : str
+        The size of the box, represented as axbxc, where a, b, and c are the
+        lengths of one side of the box, in feet.
+
+    Returns
+    -------
+    float
+        The total area of wrapping paper required, in square feet.
+
+    """
     w, h, l = parse(box_size)
     return 2 * (l*w + w*h + h*l) + w*h
 
 
 def get_ribbon_length(box_size):
+    """
+    Return the total length of ribbon required.
+
+    Parameters
+    ----------
+    box_size : str
+        The size of the box, represented as axbxc, where a, b, and c are the
+        lengths of one side of the box, in feet.
+
+    Returns
+    -------
+    float
+        The total length of ribbon required, in feet.
+
+    """
     w, h, l = parse(box_size)
     return l*w*h + 2 * (w + h)
-
-
-def parse(box_size):
-    return sorted(int(i) for i in box_size.split("x"))
 
 
 def part_one():
