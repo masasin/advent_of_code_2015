@@ -126,6 +126,10 @@ def get_ribbon_length(box_size):
 
 
 def part_one():
+    """
+    Solve Part 1.
+
+    """
     with open("inputs/day_02_input.txt", "r") as input_file:
         total_area = 0
         for box_dims in input_file:
@@ -134,6 +138,10 @@ def part_one():
 
 
 def part_two():
+    """
+    Solve Part 2.
+
+    """
     with open("inputs/day_02_input.txt", "r") as input_file:
         total_length = 0
         for box_dims in input_file:
