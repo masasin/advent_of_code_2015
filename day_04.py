@@ -27,6 +27,7 @@ Now find one that starts with six zeroes.
 
 """
 from hashlib import md5
+from itertools import count
 
 
 def test_get_hash():
@@ -45,12 +46,10 @@ def get_hash(string, number):
 
 
 def find_smallest_int(string, n_leading_zeros=5):
-    number = 1
-    while True:
+    for number in count(1):
         md5_hash = get_hash(string, number)
         if md5_hash.startswith("0" * n_leading_zeros):
             return number
-        number += 1
 
 
 def part_one():
