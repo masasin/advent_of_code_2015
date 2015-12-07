@@ -93,31 +93,17 @@ def get_floor(directions):
     """
     floor = 0
     for step in directions:
-        if step == "(":
-            floor += 1
-        elif step == ")":
-            floor -= 1
-        else:
-            raise ValueError("Invalid input")
+        floor += {"(": 1, ")": -1}[step]
     return floor
 
 
 def get_first_basement_step(directions):
     floor = 0
-    current_step = 1
 
-    for step in directions:
-        if step == "(":
-            floor += 1
-        elif step == ")":
-            floor -= 1
-        else:
-            raise ValueError("Invalid input")
-
+    for current_step, step in enumerate(directions, 1):
+        floor += {"(": 1, ")": -1}[step]
         if floor == -1:
             return current_step
-        else:
-            current_step += 1
 
 
 def one_function():
