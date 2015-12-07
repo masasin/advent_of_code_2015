@@ -66,7 +66,7 @@ def test_move():
 
 
 def test_get_visits():
-    assert get_visits(">") == 1
+    assert get_visits(">") == 2
     assert get_visits("^>v<") == 4
     assert get_visits("^v^v^v^v^v") == 2
     assert get_visits("^>v<>^") == 4
@@ -101,6 +101,7 @@ def get_visits(steps):
     for step in steps:
         visited.add(coord)
         coord = move(step, coord)
+    visited.add(coord)
 
     return len(visited)
 
@@ -120,6 +121,8 @@ def get_visits_with_robot(steps):
         visited.add(robot_coord)
         santa_coord = move(santa_step, santa_coord)
         robot_coord = move(robot_step, robot_coord)
+    visited.add(santa_coord)
+    visited.add(robot_coord)
 
     return len(visited)
 
