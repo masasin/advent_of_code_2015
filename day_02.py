@@ -65,10 +65,10 @@ def test_get_total_area():
     assert get_total_area("1x1x10") == 43
 
 
-def test_get_dimensions():
-    assert get_dimensions("2x3x4") == [2, 3, 4]
-    assert get_dimensions("1x1x10") == [1, 1, 10]
-    assert get_dimensions("5x4x3") == [3, 4, 5]
+def test_parse_dimensions():
+    assert parse_dimensions("2x3x4") == [2, 3, 4]
+    assert parse_dimensions("1x1x10") == [1, 1, 10]
+    assert parse_dimensions("5x4x3") == [3, 4, 5]
 
 
 def test_get_shortest_perimeter():
@@ -105,16 +105,16 @@ def get_shortest_perimeter(dimensions):
 
 
 def get_total_area(box_size):
-    dimensions = get_dimensions(box_size)
+    dimensions = parse_dimensions(box_size)
     return get_surface_area(dimensions) + get_slack(dimensions)
 
 
 def get_ribbon_length(box_size):
-    dimensions = get_dimensions(box_size)
+    dimensions = parse_dimensions(box_size)
     return get_volume(dimensions) + get_shortest_perimeter(dimensions)
 
 
-def get_dimensions(box_size):
+def parse_dimensions(box_size):
     return sorted(int(i) for i in box_size.split("x"))
 
 
@@ -134,9 +134,23 @@ def part_two():
         print("Total ribbon length: {} feet".format(total_length))
 
 
+def one_function():
+    with open("inputs/day_02_input.txt", "r") as input_file:
+        total_area = total_length = 0
+
+        for box_dims in input_file:
+            w, h, l = parse_dimensions(box_dims)
+            total_area += 2*(l*w + w*h + h*l) + w*h
+            total_length += l*w*h + 2*(w + h)
+
+    print("Total area: {} square feet".format(total_area))
+    print("Total ribbon length: {} feet".format(total_length))
+
+
 def main():
-    part_one()
-    part_two()
+    # part_one()
+    # part_two()
+    one_function()
 
 
 if __name__ == "__main__":
