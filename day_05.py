@@ -115,21 +115,6 @@ def part_two():
     print("{} nice strings".format(n_nice))
 
 
-def one_function():
-    with open("inputs/day_05_input.txt", "r") as input_file:
-        n_nice_1 = n_nice_2 = 0
-        for string in input_file:
-            if is_nice_1(string):
-                n_nice_1 += 1
-            if is_nice_2(string):
-                n_nice_2 += 1
-
-    print(n_nice_1, n_nice_2)
-
-
-def main():
-    one_function()
-
-
 if __name__ == "__main__":
-    main()
+    part_one()
+    part_two()

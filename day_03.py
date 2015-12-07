@@ -112,10 +112,6 @@ def part_two():
         print("{} houses visited".format(get_visits(input_file.read(), 2)))
 
 
-def main():
+if __name__ == "__main__":
     part_one()
     part_two()
-
-
-if __name__ == "__main__":
-    main()

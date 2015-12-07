@@ -64,26 +64,6 @@ def part_two():
             find_smallest_int(input_file.read().strip(), 6)))
 
 
-def one_function():
-    found_five = False
-
-    with open("inputs/day_04_input.txt", "r") as input_file:
-        cipher = input_file.read().strip()
-    for i in count(1):
-        md5_hash = md5("{s}{n}".format(s=cipher, n=i).encode()).hexdigest()
-        if md5_hash.startswith("0"*6):
-            print("Smallest for six zeros:", i)
-            break
-        elif not found_five and md5_hash.startswith("0"*5):
-            print("Smallest for five zeros:", i)
-            found_five = True
-
-
-def main():
-    one_function()
-    # part_one()
-    # part_two()
-
-
 if __name__ == "__main__":
-    main()
+    part_one()
+    part_two()

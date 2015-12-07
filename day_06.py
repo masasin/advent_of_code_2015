@@ -173,6 +173,7 @@ def part_one():
 
 def part_two():
     actions = {"turn off": -1, "turn on": 1, "toggle": 2}
+
     with open("inputs/day_06_input.txt", "r") as input_file:
         array = np.zeros((1000, 1000))
         for instruction in input_file:
