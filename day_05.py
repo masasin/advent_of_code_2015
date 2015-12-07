@@ -57,6 +57,7 @@ For example:
 How many strings are nice under these new rules?
 
 """
+import re
 
 
 def test_naughty_or_nice_1():
@@ -85,46 +86,13 @@ def test_naughty_or_nice_2():
 
 
 def is_nice_1(string):
-    bad_substrings = ("ab", "cd", "pq", "xy")
-    vowels = "aeiou"
-    vowel_count = 0
-    has_duplicates = False
-
-    for i in range(len(string) - 1):
-        if string[i] in vowels:
-            vowel_count += 1
-
-        if string[i] + string[i+1] in bad_substrings:
-            return False
-
-        if string[i] == string[i+1]:
-            has_duplicates = True
-    if string[-1] in vowels:
-        vowel_count += 1
-
-    return vowel_count >= 3 and has_duplicates
+    return (not re.search(r"(ab|cd|pq|xy)", string) and
+            re.search(r"(.*[aeiou]){3}", string) and
+            re.search(r"(.)\1", string))
 
 
 def is_nice_2(string):
-    pairs = {}
-    has_duplicate_pair = False
-    has_repeating_letter = False
-
-    for i in range(len(string) - 1):
-        # Has at least one duplicated pair
-        previous_index = pairs.setdefault(string[i] + string[i+1], i)
-        if previous_index != i:
-            if previous_index != i - 1:
-                has_duplicate_pair = True
-
-        # Has repeating letter
-        try:
-            if string[i] == string[i+2]:
-                has_repeating_letter = True
-        except IndexError:
-            continue
-
-    return has_duplicate_pair and has_repeating_letter
+    return (re.search(r"(..).*\1", string) and re.search(r"(.).\1", string))
 
 
 def part_one():
