@@ -109,8 +109,7 @@ def part_one():
 
 def part_two():
     with open("inputs/day_03_input.txt", "r") as input_file:
-        print("{} houses visited".format(
-            get_visits(input_file.read(), n_movers=2)))
+        print("{} houses visited".format(get_visits(input_file.read(), 2)))
 
 
 def main():
