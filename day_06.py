@@ -172,22 +172,17 @@ def part_one():
 
 
 def part_two():
+    actions = {"turn off": -1, "turn on": 1, "toggle": 2}
     with open("inputs/day_06_input.txt", "r") as input_file:
         array = np.zeros((1000, 1000))
         for instruction in input_file:
             command, sx, sy = parse_instruction(instruction)
-            array[sx, sy] += {"turn off": -1,
-                              "turn on": 1,
-                              "toggle": 2}[command]
+            array[sx, sy] += actions[command]
             array[array < 0] = 0
 
     print("{} total brightness".format(array.sum()))
 
 
-def main():
+if __name__ == "__main__":
     part_one()
     part_two()
-
-
-if __name__ == "__main__":
-    main()
