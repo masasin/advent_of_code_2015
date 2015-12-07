@@ -50,35 +50,15 @@ How many total feet of ribbon should they order?
 """
 
 
-def test_get_get_surface_area():
-    assert get_surface_area([2, 3, 4]) == 52
-    assert get_surface_area([1, 1, 10]) == 42
-
-
-def test_get_slack():
-    assert get_slack([2, 3, 4]) == 6
-    assert get_slack([1, 1, 10]) == 1
-
-
 def test_get_total_area():
     assert get_total_area("2x3x4") == 58
     assert get_total_area("1x1x10") == 43
 
 
-def test_parse_dimensions():
-    assert parse_dimensions("2x3x4") == [2, 3, 4]
-    assert parse_dimensions("1x1x10") == [1, 1, 10]
-    assert parse_dimensions("5x4x3") == [3, 4, 5]
-
-
-def test_get_shortest_perimeter():
-    assert get_shortest_perimeter([2, 3, 4]) == 10
-    assert get_shortest_perimeter([1, 1, 10]) == 4
-
-
-def test_get_volume():
-    assert get_volume([2, 3, 4]) == 24
-    assert get_volume([1, 1, 10]) == 10
+def test_parse():
+    assert parse("2x3x4") == [2, 3, 4]
+    assert parse("1x1x10") == [1, 1, 10]
+    assert parse("5x4x3") == [3, 4, 5]
 
 
 def test_get_ribbon_length():
@@ -86,35 +66,17 @@ def test_get_ribbon_length():
     assert get_ribbon_length("1x1x10") == 14
 
 
-def get_surface_area(dimensions):
-    l, w, h = dimensions
-    return 2*l*w + 2*w*h + 2*l*h
-
-
-def get_volume(dimensions):
-    l, w, h = dimensions
-    return l * h * w
-
-
-def get_slack(dimensions):
-    return dimensions[0] * dimensions[1]
-
-
-def get_shortest_perimeter(dimensions):
-    return 2 * (dimensions[0] + dimensions[1])
-
-
 def get_total_area(box_size):
-    dimensions = parse_dimensions(box_size)
-    return get_surface_area(dimensions) + get_slack(dimensions)
+    w, h, l = parse(box_size)
+    return 2 * (l*w + w*h + h*l) + w*h
 
 
 def get_ribbon_length(box_size):
-    dimensions = parse_dimensions(box_size)
-    return get_volume(dimensions) + get_shortest_perimeter(dimensions)
+    w, h, l = parse(box_size)
+    return l*w*h + 2 * (w + h)
 
 
-def parse_dimensions(box_size):
+def parse(box_size):
     return sorted(int(i) for i in box_size.split("x"))
 
 
@@ -134,24 +96,6 @@ def part_two():
         print("Total ribbon length: {} feet".format(total_length))
 
 
-def one_function():
-    with open("inputs/day_02_input.txt", "r") as input_file:
-        total_area = total_length = 0
-
-        for box_dims in input_file:
-            w, h, l = parse_dimensions(box_dims)
-            total_area += 2*(l*w + w*h + h*l) + w*h
-            total_length += l*w*h + 2*(w + h)
-
-    print("Total area: {} square feet".format(total_area))
-    print("Total ribbon length: {} feet".format(total_length))
-
-
-def main():
-    # part_one()
-    # part_two()
-    one_function()
-
-
 if __name__ == "__main__":
-    main()
+    part_one()
+    part_two()
