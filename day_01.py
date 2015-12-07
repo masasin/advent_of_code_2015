@@ -52,38 +52,39 @@ basement?
 
 
 def test_get_floor():
-    assert get_floor("(())") == 0
     assert get_floor("()()") == 0
     assert get_floor("(((") == 3
-    assert get_floor("(()(()(") == 3
     assert get_floor("))(((((") == 3
     assert get_floor("())") == -1
-    assert get_floor("))(") == -1
     assert get_floor(")))") == -3
-    assert get_floor(")())())") == -3
-
-
-def test_get_first_basement_step():
-    assert get_first_basement_step(")") == 1
-    assert get_first_basement_step("()())") == 5
 
 
 def get_floor(directions):
     """
     Get the floor for Santa.
 
-    An opening parenthesis, (, means he should go up one floor, and a closing
-    parenthesis, ), means he should go down one floor.
-
     Parameters
     ----------
     directions : str
-        A string of parentheses representing directions.
+        A string of parentheses representing directions. An opening parenthesis,
+        (, means he should go up one floor, and a closing parenthesis, ), means
+        he should go down one floor.
 
     Returns
     -------
     int
         The floor to which Santa should go.
+
+    Examples
+    --------
+    >>> get_floor("(())")
+    0
+    >>> get_floor("(()(()(")
+    3
+    >>> get_floor("))(")
+    -1
+    >>> get_floor(")())())")
+    -3
 
     """
     floor = 0
@@ -93,6 +94,29 @@ def get_floor(directions):
 
 
 def get_first_basement_step(directions):
+    """
+    Get the first step where Santa goes into the basement.
+
+    Parameters
+    ----------
+    directions : str
+        A string of parentheses representing directions. An opening parenthesis,
+        (, means he should go up one floor, and a closing parenthesis, ), means
+        he should go down one floor.
+
+    Returns
+    -------
+    int
+        The first step where Santa goes into the basement.
+
+    Examples
+    --------
+    >>> get_first_basement_step(")")
+    1
+    >>> get_first_basement_step("()())")
+    5
+
+    """
     floor = 0
 
     for current_step, step in enumerate(directions, 1):
@@ -102,6 +126,10 @@ def get_first_basement_step(directions):
 
 
 def one_function():
+    """
+    Solve the full problem.
+
+    """
     with open("inputs/day_01_input.txt", "r") as input_file:
         directions = input_file.read()
 
@@ -117,21 +145,24 @@ def one_function():
 
 
 def part_one():
+    """
+    Solve Part 1.
+
+    """
     with open("inputs/day_01_input.txt", "r") as input_file:
         print("Go to floor {}".format(get_floor(input_file.read())))
 
 
 def part_two():
+    """
+    Solve Part 2.
+
+    """
     with open("inputs/day_01_input.txt", "r") as input_file:
         print("Basement on step {}".format(
             get_first_basement_step(input_file.read())))
 
 
-def main():
-    one_function()
-    # part_one()
-    # part_two()
-
-
 if __name__ == "__main__":
-    main()
+    part_one()
+    part_two()
