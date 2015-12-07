@@ -85,11 +85,6 @@ def get_floor(directions):
     int
         The floor to which Santa should go.
 
-    Raises
-    ------
-    ValueError
-        If a non-parenthesis appears.
-
     """
     floor = 0
     for step in directions:
