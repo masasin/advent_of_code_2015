@@ -120,6 +120,21 @@ def get_first_basement_step(directions):
             current_step += 1
 
 
+def one_function():
+    with open("inputs/day_01_input.txt", "r") as input_file:
+        directions = input_file.read()
+
+    floor = 0
+    passed_basement = False
+
+    for i, step in enumerate(directions, 1):
+        floor += {"(": 1, ")": -1}[step]
+        if not passed_basement and floor == -1:
+            print("Basement on step {}".format(i))
+            passed_basement = True
+    print("Go to floor {}".format(floor))
+
+
 def part_one():
     with open("inputs/day_01_input.txt", "r") as input_file:
         print("Go to floor {}".format(get_floor(input_file.read())))
@@ -132,8 +147,9 @@ def part_two():
 
 
 def main():
-    part_one()
-    part_two()
+    one_function()
+    # part_one()
+    # part_two()
 
 
 if __name__ == "__main__":
