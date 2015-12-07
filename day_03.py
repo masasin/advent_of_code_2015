@@ -45,7 +45,6 @@ For example:
       direction and Robo-Santa going the other.
 
 """
-from itertools import zip_longest
 
 
 def test_move():
@@ -74,55 +73,31 @@ def test_get_visits():
 
 
 def test_get_visits_with_robot():
-    assert get_visits_with_robot("^v") == 3
-    assert get_visits_with_robot("^>v<") == 3
-    assert get_visits_with_robot("^v^v^v^v^v") == 11
+    assert get_visits("^v", 2) == 3
+    assert get_visits("^>v<", 2) == 3
+    assert get_visits("^v^v^v^v^v", 2) == 11
 
 
 def move(step, coord):
-    if step == ">":
-        diff = [1, 0]
-    elif step == "<":
-        diff = [-1, 0]
-    elif step == "^":
-        diff = [0, 1]
-    elif step == "v":
-        diff = [0, -1]
-    else:
-        raise ValueError("Unknown input")
+    moves = {
+        ">": [1, 0],
+        "<": [-1, 0],
+        "^": [0, 1],
+        "v": [0, -1],
+    }
 
+    diff = moves[step]
     return (coord[0] + diff[0], coord[1] + diff[1])
 
 
-def get_visits(steps):
-    visited = set()
+def get_visits(steps, n_movers=1):
+    visited = {(0, 0)}
 
-    coord = (0, 0)
-    for step in steps:
-        visited.add(coord)
-        coord = move(step, coord)
-    visited.add(coord)
-
-    return len(visited)
-
-
-def get_visits_with_robot(steps):
-    def grouper(iterable, n, fillvalue=None):
-        """Collect data into fixed-length chunks or blocks"""
-        # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-        args = [iter(iterable)] * n
-        return zip_longest(*args, fillvalue=fillvalue)
-
-    visited = set()
-
-    santa_coord = robot_coord = (0, 0)
-    for santa_step, robot_step in grouper(steps, 2):
-        visited.add(santa_coord)
-        visited.add(robot_coord)
-        santa_coord = move(santa_step, santa_coord)
-        robot_coord = move(robot_step, robot_coord)
-    visited.add(santa_coord)
-    visited.add(robot_coord)
+    coords = [(0, 0)] * n_movers
+    for n_steps, step in enumerate(steps):
+        idx = n_steps % n_movers
+        coords[idx] = move(step, coords[idx])
+        visited.add(coords[idx])
 
     return len(visited)
 
@@ -135,7 +110,7 @@ def part_one():
 def part_two():
     with open("inputs/day_03_input.txt", "r") as input_file:
         print("{} houses visited".format(
-            get_visits_with_robot(input_file.read())))
+            get_visits(input_file.read(), n_movers=2)))
 
 
 def main():
