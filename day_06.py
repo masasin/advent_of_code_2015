@@ -85,12 +85,13 @@ def test_parse_instruction():
 def test_follow_instruction():
     orig_array = np.zeros((1000, 1000), dtype=np.bool)
     true_array = np.ones((1000, 1000), dtype=np.bool)
-
     new_array = follow_instruction("turn on 0,0 through 999,999", orig_array)
     assert new_array.all()
     new_array = follow_instruction("turn on 0,0 through 999,999", true_array)
     assert new_array.all()
 
+    orig_array = np.zeros((1000, 1000), dtype=np.bool)
+    true_array = np.ones((1000, 1000), dtype=np.bool)
     new_array = follow_instruction("turn off 499,499 through 500,500",
                                    orig_array)
     assert not new_array[499:500, 499:500].any()
@@ -98,11 +99,15 @@ def test_follow_instruction():
                                    true_array)
     assert not new_array[499:500, 499:500].any()
 
+    orig_array = np.zeros((1000, 1000), dtype=np.bool)
+    true_array = np.ones((1000, 1000), dtype=np.bool)
     new_array = follow_instruction("toggle 499,499 through 500,500", orig_array)
     assert new_array[499:500, 499:500].all()
     new_array = follow_instruction("toggle 499,499 through 500,500", true_array)
     assert not new_array[499:500, 499:500].any()
 
+    orig_array = np.zeros((1000, 1000), dtype=np.bool)
+    true_array = np.ones((1000, 1000), dtype=np.bool)
     new_array = follow_instruction("toggle 0,0 through 999,0", orig_array)
     assert new_array[:, 0].all()
     new_array = follow_instruction("toggle 0,0 through 999,0", true_array)
@@ -111,15 +116,18 @@ def test_follow_instruction():
 
 def test_follow_elvish():
     orig_array = np.zeros((1000, 1000))
-
     new_array = follow_elvish("turn off 499,499 through 500,500", orig_array)
     assert new_array.sum() == 0
+    orig_array = np.zeros((1000, 1000))
     new_array = follow_elvish("turn on 499,499 through 500,500", orig_array)
     assert new_array.sum() == 4
+    orig_array = np.zeros((1000, 1000))
     new_array = follow_elvish("toggle 499,499 through 500,500", orig_array)
     assert new_array.sum() == 8
+    orig_array = np.zeros((1000, 1000))
     new_array = follow_elvish("turn on 0,0 through 0,0", orig_array)
     assert new_array.sum() == 1
+    orig_array = np.zeros((1000, 1000))
     new_array = follow_elvish("toggle 0,0 through 999,999", orig_array)
     assert new_array.sum() == 2000000
 
@@ -132,24 +140,22 @@ def parse_instruction(instruction):
 
 def follow_instruction(instruction, array):
     command, sx, sy = parse_instruction(instruction)
-    new_array = array.copy()
 
     if command in ("turn off", "turn on"):
-        new_array[sx, sy] = ["turn off", "turn on"].index(command)
+        array[sx, sy] = ["turn off", "turn on"].index(command)
     elif command == "toggle":
-        new_array[sx, sy] ^= 1
+        array[sx, sy] ^= 1
 
-    return new_array
+    return array
 
 
 def follow_elvish(instruction, array):
     command, sx, sy = parse_instruction(instruction)
-    new_array = array.copy()
 
-    new_array[sx, sy] += {"turn off": -1, "turn on": 1, "toggle": 2}[command]
-    new_array[new_array < 0] = 0
+    array[sx, sy] += {"turn off": -1, "turn on": 1, "toggle": 2}[command]
+    array[array < 0] = 0
 
-    return new_array
+    return array
 
 
 def part_one():
@@ -179,22 +185,8 @@ def part_two():
 
 
 def main():
-    with open("inputs/day_06_input.txt", "r") as input_file:
-        grid = np.zeros((1000, 1000), dtype=np.bool)
-        elvish = np.zeros((1000, 1000))
-        for instruction in input_file:
-            command, sx, sy = parse_instruction(instruction)
-            if command in ("turn off", "turn on"):
-                grid[sx, sy] = ["turn off", "turn on"].index(command)
-            elif command == "toggle":
-                grid[sx, sy] ^= 1
-            elvish[sx, sy] += {"turn off": -1,
-                               "turn on": 1,
-                               "toggle": 2}[command]
-            elvish[elvish < 0] = 0
-
-    print("{} lights on".format(grid.sum()))
-    print("{} total brightness".format(elvish.sum()))
+    part_one()
+    part_two()
 
 
 if __name__ == "__main__":
