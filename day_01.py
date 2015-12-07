@@ -84,17 +84,6 @@ def get_floor(directions):
     int
         The floor to which Santa should go.
 
-    Examples
-    --------
-    >>> get_floor("(())")
-    0
-    >>> get_floor("(()(()(")
-    3
-    >>> get_floor("))(")
-    -1
-    >>> get_floor(")())())")
-    -3
-
     """
     floor = 0
     for step in directions:
@@ -118,13 +107,6 @@ def get_first_basement_step(directions):
     int
         The first step where Santa goes into the basement.
 
-    Examples
-    --------
-    >>> get_first_basement_step(")")
-    1
-    >>> get_first_basement_step("()())")
-    5
-
     """
     floor = 0
 
@@ -132,25 +114,6 @@ def get_first_basement_step(directions):
         floor += {"(": 1, ")": -1}[step]
         if floor == -1:
             return current_step
-
-
-def one_function():
-    """
-    Solve the full problem.
-
-    """
-    with open("inputs/day_01_input.txt", "r") as input_file:
-        directions = input_file.read()
-
-    floor = 0
-    passed_basement = False
-
-    for i, step in enumerate(directions, 1):
-        floor += {"(": 1, ")": -1}[step]
-        if not passed_basement and floor == -1:
-            print("Basement on step {}".format(i))
-            passed_basement = True
-    print("Go to floor {}".format(floor))
 
 
 def part_one():
