@@ -1,5 +1,5 @@
 """
-http://adventofcode.com/day/1
+http://adventofcode.com/day/7
 
 --- Day 7: Some Assembly Required ---
 
