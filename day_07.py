@@ -72,45 +72,45 @@ import pytest
 
 def test_parse():
     solver = Solver()
-    solver.parse("123 -> x")
+    solver._parse("123 -> x")
     assert solver.inputs == {"x": "123".split()}
 
     solver = Solver()
-    solver.parse("456 -> y")
+    solver._parse("456 -> y")
     assert solver.inputs == {"y": "456".split()}
 
     solver = Solver()
-    solver.parse("123 AND 456 -> x")
+    solver._parse("123 AND 456 -> x")
     assert solver.inputs == {"x": "123 AND 456".split()}
 
     solver = Solver()
-    solver.parse("x AND 456 -> z")
+    solver._parse("x AND 456 -> z")
     assert solver.inputs == {"z": "x AND 456".split()}
 
     solver = Solver()
-    solver.parse("NOT 123 -> y")
+    solver._parse("NOT 123 -> y")
     assert solver.inputs == {"y": "NOT 123".split()}
 
 
 def test_make_outputs():
     solver = Solver()
-    solver.parse("123 -> x")
-    solver.make_outputs()
+    solver._parse("123 -> x")
+    solver._make_outputs()
     assert solver.outputs == {"x": 123}
 
     solver = Solver()
-    solver.parse("456 -> y")
-    solver.make_outputs()
+    solver._parse("456 -> y")
+    solver._make_outputs()
     assert solver.outputs == {"y": 456}
 
     solver = Solver()
-    solver.parse("123 AND 456 -> x")
-    solver.make_outputs()
+    solver._parse("123 AND 456 -> x")
+    solver._make_outputs()
     assert solver.outputs == {"x": 123 & 456}
 
     solver = Solver()
-    solver.parse("NOT 123 -> y")
-    solver.make_outputs()
+    solver._parse("NOT 123 -> y")
+    solver._make_outputs()
     assert solver.outputs == {"y": ~np.uint16(123)}
 
 
@@ -119,39 +119,39 @@ def test_do_instruction():
     solver.inputs = {"x": "123", "y": "456"}
     solver.outputs = {"x": 123, "y": 456}
 
-    assert solver.do_instruction(["123"]) == 123
-    assert solver.do_instruction(["456"]) == 456
-    assert solver.do_instruction("123 AND 456".split()) == 123 & 456
-    assert solver.do_instruction("NOT 123".split()) == ~np.uint16(123)
-    assert solver.do_instruction(["x"]) == 123
-    assert solver.do_instruction(["y"]) == 456
-    assert solver.do_instruction("x AND y".split()) == 123 & 456
-    assert solver.do_instruction("123 AND y".split()) == 123 & 456
-    assert solver.do_instruction("x AND 456".split()) == 123 & 456
-    assert solver.do_instruction("NOT x".split()) == ~np.uint16(123)
+    assert solver._do_instruction(["123"]) == 123
+    assert solver._do_instruction(["456"]) == 456
+    assert solver._do_instruction("123 AND 456".split()) == 123 & 456
+    assert solver._do_instruction("NOT 123".split()) == ~np.uint16(123)
+    assert solver._do_instruction(["x"]) == 123
+    assert solver._do_instruction(["y"]) == 456
+    assert solver._do_instruction("x AND y".split()) == 123 & 456
+    assert solver._do_instruction("123 AND y".split()) == 123 & 456
+    assert solver._do_instruction("x AND 456".split()) == 123 & 456
+    assert solver._do_instruction("NOT x".split()) == ~np.uint16(123)
 
 
 def test_get_value():
     solver = Solver()
     with pytest.raises(ValueError):
-        solver.get_value("x")
+        solver._get_value("x")
     solver.inputs = {"x": ["123"], "y": "x AND 119".split()}
     with pytest.raises(KeyError):
-        solver.get_value("x")
+        solver._get_value("x")
     solver.outputs = {"x": 123, "y": 115}
-    assert solver.get_value("y") == 115
-    assert solver.get_value("115") == 115
+    assert solver._get_value("y") == 115
+    assert solver._get_value("115") == 115
 
 
 def test_make_inputs():
     string = "123 -> x\n456 -> y"
     solver = Solver()
-    solver.make_inputs(string)
+    solver._make_inputs(string)
     assert solver.inputs == {"x": ["123"], "y": ["456"]}
 
     string = "123 -> y\ny -> x"
     solver = Solver()
-    solver.make_inputs(string)
+    solver._make_inputs(string)
     assert solver.inputs == {"x": ["y"], "y": ["123"]}
 
 
@@ -212,32 +212,32 @@ class Solver(object):
         self.outputs = {}
 
     def solve(self, instructions):
-        self.make_inputs(instructions)
-        self.make_outputs()
+        self._make_inputs(instructions)
+        self._make_outputs()
 
-    def make_inputs(self, instructions):
+    def _make_inputs(self, instructions):
         for instruction in instructions.splitlines():
-            self.parse(instruction)
+            self._parse(instruction)
 
-    def parse(self, instruction):
+    def _parse(self, instruction):
         (ops, wire) = instruction.split(" -> ")
         self.inputs[wire] = ops.split()
 
-    def make_outputs(self):
+    def _make_outputs(self):
         keys = set(self.inputs.keys())
         while keys:
             for key in keys.copy():
                 try:
-                    self.outputs[key] = self.do_instruction(self.inputs[key])
+                    self.outputs[key] = self._do_instruction(self.inputs[key])
                     keys.remove(key)
                 except KeyError:
                     continue
 
-    def do_instruction(self, instruction):
+    def _do_instruction(self, instruction):
         if len(instruction) == 1:
-            return self.get_value(instruction[0])
+            return self._get_value(instruction[0])
         elif len(instruction) == 2:
-            return ~self.get_value(instruction[1])
+            return ~self._get_value(instruction[1])
         elif len(instruction) == 3:
             operations = {
                 "AND": operator.and_,
@@ -246,12 +246,12 @@ class Solver(object):
                 "RSHIFT": operator.rshift,
             }
 
-            in_1 = self.get_value(instruction[0])
+            in_1 = self._get_value(instruction[0])
             op = instruction[1]
-            in_2 = self.get_value(instruction[2])
+            in_2 = self._get_value(instruction[2])
             return operations[op](in_1, in_2)
 
-    def get_value(self, item):
+    def _get_value(self, item):
         if item in self.inputs:
             return np.uint16(self.outputs[item])
         else:
