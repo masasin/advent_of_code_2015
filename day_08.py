@@ -1,0 +1,137 @@
+"""
+http://adventofcode.com/day/8
+
+Space on the sleigh is limited this year, and so Santa will be bringing his list
+as a digital copy. He needs to know how much space it will take up when stored.
+
+It is common in many programming languages to provide a way to escape special
+characters in strings. For example, C, JavaScript, Perl, Python, and even PHP
+handle special characters in very similar ways.
+
+However, it is important to realize the difference between the number of
+characters in the code representation of the string literal and the number of
+characters in the in-memory string itself.
+
+For example:
+
+    - "" is 2 characters of code (the two double quotes), but the string
+      contains zero characters.
+    - "abc" is 5 characters of code, but 3 characters in the string data.
+    - "aaa\"aaa" is 10 characters of code, but the string itself contains six
+      "a" characters and a single, escaped quote character, for a total of 7
+      characters in the string data.
+    - "\x27" is 6 characters of code, but the string itself contains just one -
+      an apostrophe ('), escaped using hexadecimal notation.
+
+Santa's list is a file that contains many double-quoted string literals, one on
+each line. The only escape sequences used are \\ (which represents a single
+backslash), \" (which represents a lone double-quote character), and \xFF (incl.
+two hexadecimal characters) (which represents a single character with that ASCII
+code).
+
+Disregarding the whitespace in the file, what is the number of characters of
+code for string literals minus the number of characters in memory for the values
+of the strings in total for the entire file?
+
+For example, given the four strings above, the total number of characters of
+string code (2 + 5 + 10 + 6 = 23) minus the total number of characters in memory
+for string values (0 + 3 + 7 + 1 = 11) is 23 - 11 = 12.
+
+--- Part Two ---
+
+Now, let's go the other way. In addition to finding the number of characters of
+code, you should now encode each code representation as a new string and find
+the number of characters of the new encoded representation, including the
+surrounding double quotes.
+
+For example:
+
+    - "" encodes to "\"\"", an increase from 2 characters to 6.
+    - "abc" encodes to "\"abc\"", an increase from 5 characters to 9.
+    - "aaa\"aaa" encodes to "\"aaa\\\"aaa\"", an increase from 10 characters to
+      16.
+    - "\x27" encodes to "\"\\x27\"", an increase from 6 characters to 11.
+
+Your task is to find the total number of characters to represent the newly
+encoded strings minus the number of characters of code in each original string
+literal. For example, for the strings above, the total encoded length
+(6 + 9 + 16 + 11 = 42) minus the characters in the original code representation
+(23, just like in the first part of this puzzle) is 42 - 23 = 19.
+
+"""
+
+
+def test_count_literals():
+    assert count_literals(r'""') == 2
+    assert count_literals(r'"abc"') == 5
+    assert count_literals(r'"aaa\"aaa"') == 10
+    assert count_literals(r'"\x27"') == 6
+
+
+def test_count_characters():
+    assert count_characters(r'""') == 0
+    assert count_characters(r'"abc"') == 3
+    assert count_characters(r'"aaa\"aaa"') == 7
+    assert count_characters(r'"aaa\"aaa\""') == 8
+    assert count_characters(r'"\x27"') == 1
+
+
+def test_count_encoded():
+    assert count_encoded(r'""') == 6
+    assert count_encoded(r'"abc"') == 9
+    assert count_encoded(r'"aaa\"aaa"') == 16
+    assert count_encoded(r'"\x27"') == 11
+
+
+def count_literals(s):
+    return len(s)
+
+
+def count_characters(s):
+    s = s[1:-1]
+    length = i = 0
+    while i < len(s):
+        length += 1
+        if s[i] == "\\":
+            if s[i+1] == "x":
+                i += 4
+            else:
+                i += 2
+        else:
+            i += 1
+    return length
+
+
+def count_encoded(s):
+    length = 2
+    for char in s:
+        if char in ('"', "\\"):
+            length += 2
+        else:
+            length += 1
+    return length
+
+
+def part_one():
+    total_literals = total_chars = 0
+    with open("inputs/day_08_input.txt") as fin:
+        for line in [s.strip() for s in fin.readlines()]:
+            total_literals += count_literals(line)
+            total_chars += count_characters(line)
+    print("Difference between literals and chars: {}"
+          .format(total_literals - total_chars))
+
+
+def part_two():
+    total_literals = total_encoded = 0
+    with open("inputs/day_08_input.txt") as fin:
+        for line in [s.strip() for s in fin.readlines()]:
+            total_literals += count_literals(line)
+            total_encoded += count_encoded(line)
+    print("Difference between encoded and literals: {}"
+          .format(total_encoded - total_literals))
+
+
+if __name__ == "__main__":
+    part_one()
+    part_two()
