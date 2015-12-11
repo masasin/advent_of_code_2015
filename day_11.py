@@ -1,4 +1,3 @@
-from itertools import tee
 import re
 from string import ascii_lowercase
 
@@ -27,22 +26,9 @@ def test_next_letter():
     assert next_letter("z") == "a"
 
 
-def test_window():
-    assert list(window("abcd")) == [("a", "b"), ("b", "c"), ("c", "d")]
-    assert list(window("abcd", 3)) == [("a", "b", "c"), ("b", "c", "d")]
-
-
 def test_find_next_password():
     assert find_next_password("abcdefgh") == "abcdffaa"
     assert find_next_password("ghijklmn") == "ghjaabcc"
-
-
-def window(iterable, size=2):
-    splits = list(tee(iterable, size))
-    for i, t in enumerate(splits):
-        for _ in range(i):
-            next(t)
-    return zip(*splits)
 
 
 def find_next_password(password, n=1):
@@ -55,14 +41,12 @@ def find_next_password(password, n=1):
 
 def validate(password):
     # Requirement 2
-    bad_letters = ("iol")
-    for letter in bad_letters:
-        if letter in password:
-            return False
+    if re.search(r"[iol]", password):
+        return False
 
     # Requirement 1
-    for i in window(ascii_lowercase, 3):
-        if "".join(i) in password:
+    for i in range(len(password) - 2):
+        if password[i:i+3] in ascii_lowercase:
             break
     else:
         return False
@@ -100,6 +84,13 @@ def part_two():
     print("Next password: {}".format(find_next_password(password, 2)))
 
 
+def main():
+    with open("inputs/day_11_input.txt") as fin:
+        password = fin.readline().strip()
+    next_password = find_next_password(password)
+    print("Next password: {}".format(next_password))
+    print("Next next password: {}".format(find_next_password(next_password)))
+
+
 if __name__ == "__main__":
-    part_one()
-    part_two()
+    main()
