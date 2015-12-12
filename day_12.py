@@ -62,13 +62,40 @@ def test_sum_non_reds():
 
 
 def sum_numbers(s):
+    """
+    Add all numbers.
+
+    Parameters
+    ----------
+    s : Any
+        Anything which can be converted into a string.
+
+    Returns
+    -------
+        The sum of all the numbers in the string.
+
+    """
     return sum(int(i) for i in re.findall(r"(-?\d+)", str(s)))
 
 
 def sum_non_reds(s):
+    """
+    Sum all numbers except for those contained in a dict where a value is "red".
+
+    Parameters
+    ----------
+    s : int, list, or dict
+        An item to extract numbers from.
+
+    Returns
+    -------
+    int
+        The total of all valid numbers.
+
+    """
     if isinstance(s, int):
         return s
-    if isinstance(s, list):
+    elif isinstance(s, list):
         return sum(sum_non_reds(i) for i in s)
     elif isinstance(s, dict):
         if "red" in s.values():
@@ -80,11 +107,19 @@ def sum_non_reds(s):
 
 
 def part_one():
+    """
+    Solve Part 1.
+
+    """
     with open("inputs/day_12_input.txt") as fin:
         print(sum_numbers(fin.read()))
 
 
 def part_two():
+    """
+    Solve Part 2.
+
+    """
     with open("inputs/day_12_input.txt") as fin:
         print(sum_non_reds(json.load(fin)))
 
