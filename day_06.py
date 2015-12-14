@@ -61,79 +61,9 @@ import re
 import numpy as np
 
 
-PATTERN = re.compile(r"([\w\s]+)\s(\d+),(\d+) through (\d+),(\d+)")
-
-
-def test_parse_instruction():
-    assert parse_instruction("turn on 0,0 through 999,999") == (
-        "turn on",
-        slice(0, 1000),
-        slice(0, 1000),
-    )
-    assert parse_instruction("toggle 0,0 through 999,0") == (
-        "toggle",
-        slice(0, 1000),
-        slice(0, 1),
-    )
-    assert parse_instruction("turn off 499,499 through 500,500") == (
-        "turn off",
-        slice(499, 501),
-        slice(499, 501),
-    )
-
-
-def test_follow_instruction():
-    orig_array = np.zeros((1000, 1000), dtype=np.bool)
-    true_array = np.ones((1000, 1000), dtype=np.bool)
-    new_array = follow_instruction("turn on 0,0 through 999,999", orig_array)
-    assert new_array.all()
-    new_array = follow_instruction("turn on 0,0 through 999,999", true_array)
-    assert new_array.all()
-
-    orig_array = np.zeros((1000, 1000), dtype=np.bool)
-    true_array = np.ones((1000, 1000), dtype=np.bool)
-    new_array = follow_instruction("turn off 499,499 through 500,500",
-                                   orig_array)
-    assert not new_array[499:500, 499:500].any()
-    new_array = follow_instruction("turn off 499,499 through 500,500",
-                                   true_array)
-    assert not new_array[499:500, 499:500].any()
-
-    orig_array = np.zeros((1000, 1000), dtype=np.bool)
-    true_array = np.ones((1000, 1000), dtype=np.bool)
-    new_array = follow_instruction("toggle 499,499 through 500,500", orig_array)
-    assert new_array[499:500, 499:500].all()
-    new_array = follow_instruction("toggle 499,499 through 500,500", true_array)
-    assert not new_array[499:500, 499:500].any()
-
-    orig_array = np.zeros((1000, 1000), dtype=np.bool)
-    true_array = np.ones((1000, 1000), dtype=np.bool)
-    new_array = follow_instruction("toggle 0,0 through 999,0", orig_array)
-    assert new_array[:, 0].all()
-    new_array = follow_instruction("toggle 0,0 through 999,0", true_array)
-    assert not new_array[:, 0].any()
-
-
-def test_follow_elvish():
-    orig_array = np.zeros((1000, 1000))
-    new_array = follow_elvish("turn off 499,499 through 500,500", orig_array)
-    assert new_array.sum() == 0
-    orig_array = np.zeros((1000, 1000))
-    new_array = follow_elvish("turn on 499,499 through 500,500", orig_array)
-    assert new_array.sum() == 4
-    orig_array = np.zeros((1000, 1000))
-    new_array = follow_elvish("toggle 499,499 through 500,500", orig_array)
-    assert new_array.sum() == 8
-    orig_array = np.zeros((1000, 1000))
-    new_array = follow_elvish("turn on 0,0 through 0,0", orig_array)
-    assert new_array.sum() == 1
-    orig_array = np.zeros((1000, 1000))
-    new_array = follow_elvish("toggle 0,0 through 999,999", orig_array)
-    assert new_array.sum() == 2000000
-
-
 def parse_instruction(instruction):
-    match = re.search(PATTERN, instruction)
+    match = re.search(r"([\w\s]+)\s(\d+),(\d+) through (\d+),(\d+)",
+                      instruction)
     command, xi, yi, xf, yf = match.groups()
     return command, slice(int(xi), int(xf)+1), slice(int(yi), int(yf)+1)
 
@@ -144,7 +74,7 @@ def follow_instruction(instruction, array):
     if command in ("turn off", "turn on"):
         array[sx, sy] = ["turn off", "turn on"].index(command)
     elif command == "toggle":
-        array[sx, sy] ^= 1
+        array[sx, sy] = (array[sx, sy] + 1) % 2
 
     return array
 
@@ -160,14 +90,13 @@ def follow_elvish(instruction, array):
 
 def part_one():
     with open("inputs/day_06_input.txt", "r") as input_file:
-        array = np.zeros((1000, 1000), dtype=np.bool)
+        array = np.zeros((1000, 1000))
         for instruction in input_file:
             command, sx, sy = parse_instruction(instruction)
             if command in ("turn off", "turn on"):
                 array[sx, sy] = ["turn off", "turn on"].index(command)
             elif command == "toggle":
-                array[sx, sy] ^= 1
-
+                array[sx, sy] = (array[sx, sy] + 1) % 2
     print("{} lights on".format(array.sum()))
 
 
@@ -184,6 +113,26 @@ def part_two():
     print("{} total brightness".format(array.sum()))
 
 
+def main():
+    with open("inputs/day_06_input.txt", "r") as input_file:
+        actions = {"turn off": -1,
+                   "turn on": 1,
+                   "toggle": 2}
+        grid = np.zeros((1000, 1000))
+        elvish = np.zeros((1000, 1000))
+        for instruction in input_file:
+            command, sx, sy = parse_instruction(instruction)
+            if command in ("turn off", "turn on"):
+                grid[sx, sy] = ["turn off", "turn on"].index(command)
+            elif command == "toggle":
+                grid[sx, sy] = (grid[sx, sy] + 1) % 2
+
+            elvish[sx, sy] += actions[command]
+            elvish[elvish < 0] = 0
+
+    print("{} lights on".format(grid.sum()))
+    print("{} total brightness".format(elvish.sum()))
+
+
 if __name__ == "__main__":
-    part_one()
-    part_two()
+    main()

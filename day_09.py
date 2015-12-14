@@ -48,26 +48,6 @@ from itertools import permutations, tee
 import re
 
 
-def test_find_shortest_route_length():
-    distances = {("London", "Dublin"): 464,
-                 ("London", "Belfast"): 518,
-                 ("Dublin", "Belfast"): 141}
-    for k, v in distances.copy().items():
-        distances[tuple(k[::-1])] = v
-    assert find_shortest_route_length(distances) == 605
-
-
-def test_parse():
-    assert parse("Snowdin to Tambi = 22") == (("Snowdin", "Tambi"), 22)
-
-
-def test_add_to_dict():
-    d = {}
-    add_to_dict((("Snowdin", "Tambi"), 22), d)
-    assert d == {("Snowdin", "Tambi"): 22,
-                 ("Tambi", "Snowdin"): 22}
-
-
 def parse(string):
     result = re.search(r"(\w+) to (\w+) = (\d+)", string)
     origin, destination, distance = result.groups()
@@ -79,7 +59,7 @@ def add_to_dict(path, d):
     d[tuple(path[0][::-1])] = path[1]
 
 
-def find_routes(d):
+def _find_routes(d):
     def pairwise(iterable):
         a, b = tee(iterable)
         next(b, None)
@@ -100,12 +80,12 @@ def find_routes(d):
 
 
 def find_shortest_route_length(d):
-    routes = find_routes(d)
+    routes = _find_routes(d)
     return min(routes.values())
 
 
 def find_longest_route_length(d):
-    routes = find_routes(d)
+    routes = _find_routes(d)
     return max(routes.values())
 
 

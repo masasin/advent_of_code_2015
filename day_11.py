@@ -5,32 +5,41 @@ http://adventofcode.com/day/10
 
 Santa's previous password expired, and he needs help choosing a new one.
 
-To help him remember his new password after the old one expires, Santa has devised a method of coming up with a password
-based on the previous one. Corporate policy dictates that passwords must be exactly eight lowercase letters (for
-security reasons), so he finds his new password by incrementing his old password string repeatedly until it is valid.
+To help him remember his new password after the old one expires, Santa has
+devised a method of coming up with a password based on the previous one.
+Corporate policy dictates that passwords must be exactly eight lowercase letters
+(for security reasons), so he finds his new password by incrementing his old
+password string repeatedly until it is valid.
 
-Incrementing is just like counting with numbers: xx, xy, xz, ya, yb, and so on. Increase the rightmost letter one step;
-if it was z, it wraps around to a, and repeat with the next letter to the left until one doesn't wrap around.
+Incrementing is just like counting with numbers: xx, xy, xz, ya, yb, and so on.
+Increase the rightmost letter one step; if it was z, it wraps around to a, and
+repeat with the next letter to the left until one doesn't wrap around.
 
-Unfortunately for Santa, a new Security-Elf recently started, and he has imposed some additional password requirements:
+Unfortunately for Santa, a new Security-Elf recently started, and he has imposed
+some additional password requirements:
 
-    - Passwords must include one increasing straight of at least three letters, like abc, bcd, cde, and so on, up to
-      xyz. They cannot skip letters; abd doesn't count.
-    - Passwords may not contain the letters i, o, or l, as these letters can be mistaken for other characters and are
-      therefore confusing.
-    - Passwords must contain at least two different, non-overlapping pairs of letters, like aa, bb, or zz.
+    - Passwords must include one increasing straight of at least three letters,
+      like abc, bcd, cde, and so on, up to xyz. They cannot skip letters; abd
+      doesn't count.
+    - Passwords may not contain the letters i, o, or l, as these letters can be
+      mistaken for other characters and are therefore confusing.
+    - Passwords must contain at least two different, non-overlapping pairs of
+      letters, like aa, bb, or zz.
 
 For example:
 
-    - hijklmmn meets the first requirement (because it contains the straight hij) but fails the second requirement
-      requirement (because it contains i and l).
-    - abbceffg meets the third requirement (because it repeats bb and ff) but fails the first requirement.
-    - abbcegjk fails the third requirement, because it only has one double letter (bb).
+    - hijklmmn meets the first requirement (because it contains the straight
+      hij) but fails the second requirement (because it contains i and l).
+    - abbceffg meets the third requirement (because it repeats bb and ff) but
+      fails the first requirement.
+    - abbcegjk fails the third requirement, because it only has one double
+      letter (bb).
     - The next password after abcdefgh is abcdffaa.
-    - The next password after ghijklmn is ghjaabcc, because you eventually skip all the passwords that start with
-      ghi..., since i is not allowed.
+    - The next password after ghijklmn is ghjaabcc, because you eventually skip
+      all the passwords that start with ghi..., since i is not allowed.
 
-Given Santa's current password (your puzzle input), what should his next password be?
+Given Santa's current password (your puzzle input), what should his next
+password be?
 
 --- Part Two ---
 
@@ -39,35 +48,6 @@ Santa's password expired again. What's the next one?
 """
 import re
 from string import ascii_lowercase
-
-
-def test_validate():
-    assert validate("hijklmmn") is False
-    assert validate("abbceffg") is False
-    assert validate("abbcejgk") is False
-    assert validate("abcdffaa")
-    assert validate("ghjaabcc")
-
-
-def test_increment_password():
-    assert increment_password("xx") == "xy"
-    assert increment_password("xy") == "xz"
-    assert increment_password("xz") == "ya"
-    assert increment_password("ya") == "yb"
-    assert increment_password("abcdefgh") == "abcdefgi"
-    assert increment_password("abcdefgz") == "abcdefha"
-    assert increment_password("abczzzzz") == "abdaaaaa"
-
-
-def test_next_letter():
-    assert next_letter("a") == "b"
-    assert next_letter("k") == "l"
-    assert next_letter("z") == "a"
-
-
-def test_find_next_password():
-    assert find_next_password("abcdefgh") == "abcdffaa"
-    assert find_next_password("ghijklmn") == "ghjaabcc"
 
 
 def find_next_password(password, n=1):

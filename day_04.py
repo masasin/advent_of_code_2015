@@ -30,23 +30,13 @@ from hashlib import md5
 from itertools import count
 
 
-def test_get_hash():
-    assert get_hash("abcdef", 609043) == "000001dbbfa3a5c83a2d506429c7b00e"
-    assert get_hash("pqrstuv", 1048970) == "000006136ef2ff3b291c85725f17325c"
-
-
-def test_find_smallest_int():
-    assert find_smallest_int("abcdef") == 609043
-    assert find_smallest_int("pqrstuv") == 1048970
-
-
 def get_hash(string, number):
     md5_input = "{string}{number}".format(string=string, number=number).encode()
     return md5(md5_input).hexdigest()
 
 
-def find_smallest_int(string, n_leading_zeros=5):
-    for number in count(1):
+def find_smallest_int(string, n_leading_zeros=5, starting_number=1):
+    for number in count(starting_number):
         md5_hash = get_hash(string, number)
         if md5_hash.startswith("0" * n_leading_zeros):
             return number
