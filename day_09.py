@@ -51,7 +51,7 @@ import re
 def parse(string):
     result = re.search(r"(\w+) to (\w+) = (\d+)", string)
     origin, destination, distance = result.groups()
-    return ((origin, destination), float(distance))
+    return (origin, destination), float(distance)
 
 
 def add_to_dict(path, d):

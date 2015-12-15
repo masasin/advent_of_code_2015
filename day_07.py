@@ -67,7 +67,6 @@ to wire a?
 import operator
 
 import numpy as np
-import pytest
 
 
 class Solver(object):
