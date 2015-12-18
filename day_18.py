@@ -154,20 +154,20 @@ import numpy as np
 
 
 class Game(object):
-    def __init__(self, inital_state, broken=False):
-        self._state = self.parse(inital_state)
-        self.shape = self.state.shape
-        self.xmax = self.shape[0] - 1
-        self.ymax = self.shape[1] - 1
+    def __init__(self, initial_state, broken=False):
+        self._state = self.parse(initial_state)
+        shape = self.state.shape
+        self.x_max = shape[0] - 1
+        self.y_max = shape[1] - 1
         self.broken = broken
         self._set_broken_lights()
 
     def _set_broken_lights(self):
         if self.broken:
             self.state[0, 0] = 1
-            self.state[0, self.ymax] = 1
-            self.state[self.xmax, 0] = 1
-            self.state[self.xmax, self.ymax] = 1
+            self.state[0, self.y_max] = 1
+            self.state[self.x_max, 0] = 1
+            self.state[self.x_max, self.y_max] = 1
 
     @property
     def state(self):
@@ -179,13 +179,13 @@ class Game(object):
 
     @staticmethod
     def parse(initial_state):
-        config = []
-        for line in initial_state.strip().split("\n"):
-            config.append([0] + [0 if i == "." else 1 for i in line] + [0])
-        config.append([0] * len(config[0]))
-        state = [[0] * len(config[0])]
-        state.extend(config)
-        return np.array(state, dtype=np.byte)
+        size_x = initial_state.index("\n")
+        size_y = initial_state.strip().count("\n") + 1
+        state = np.zeros((size_x + 2, size_y + 2), dtype=np.uint8)
+        for i, line in enumerate(initial_state.strip().split("\n")):
+            for j, char in enumerate(line):
+                state[i + 1, j + 1] = 0 if char == "." else 1
+        return state
 
     def get_n_neighbours(self):
         return (self._state[0:-2, 0:-2] + self._state[0:-2, 1:-1] +

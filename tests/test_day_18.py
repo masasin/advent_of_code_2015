@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 
 from day_18 import Game
@@ -13,6 +12,7 @@ initial_state = (".#.#.#\n"
 
 
 def test_parse():
+    print(Game.parse(initial_state))
     assert np.all(Game.parse(initial_state) ==
                   np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 1, 0, 1, 0, 1, 0],
@@ -36,7 +36,6 @@ class TestGame(object):
                                                    [0, 0, 1, 0, 0, 0],
                                                    [1, 0, 1, 0, 0, 1],
                                                    [1, 1, 1, 1, 0, 0]]))
-        assert self.game.shape == (6, 6)
 
     def test_get_n_neighbours(self):
         assert np.all(self.game.get_n_neighbours() ==
@@ -82,10 +81,8 @@ class TestBrokenGame(object):
                                                    [0, 0, 1, 0, 0, 0],
                                                    [1, 0, 1, 0, 0, 1],
                                                    [1, 1, 1, 1, 0, 1]]))
-        assert self.game.shape == (6, 6)
 
     def test_get_n_neighbours(self):
-        print(self.game.get_n_neighbours())
         assert np.all(self.game.get_n_neighbours() ==
                       np.array([[1, 1, 3, 2, 4, 1],
                                 [3, 3, 3, 2, 4, 3],
