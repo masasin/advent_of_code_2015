@@ -155,52 +155,55 @@ import numpy as np
 
 class Game(object):
     def __init__(self, inital_state, broken=False):
-        self.state = self.parse(inital_state)
+        self._state = self.parse(inital_state)
         self.shape = self.state.shape
+        self.xmax = self.shape[0] - 1
+        self.ymax = self.shape[1] - 1
         self.broken = broken
         self._set_broken_lights()
 
     def _set_broken_lights(self):
         if self.broken:
-            x, y = self.shape
             self.state[0, 0] = 1
-            self.state[0, y-1] = 1
-            self.state[x-1, 0] = 1
-            self.state[x-1, y-1] = 1
+            self.state[0, self.ymax] = 1
+            self.state[self.xmax, 0] = 1
+            self.state[self.xmax, self.ymax] = 1
+
+    @property
+    def state(self):
+        return self._state[1:-1, 1:-1]
+
+    @state.setter
+    def state(self, new_state):
+        self._state[1:-1, 1:-1] = new_state
 
     @staticmethod
     def parse(initial_state):
         config = []
         for line in initial_state.strip().split("\n"):
-            config.append([0 if i == "." else 1 for i in line])
-        return np.array(config)
+            config.append([0] + [0 if i == "." else 1 for i in line] + [0])
+        config.append([0] * len(config[0]))
+        state = [[0] * len(config[0])]
+        state.extend(config)
+        return np.array(state, dtype=np.byte)
 
-    def get_n_neighbours(self, x, y):
-        total = -self.state[x, y]
-        for dx in (-1, 0, 1):
-            for dy in (-1, 0, 1):
-                if 0 <= x + dx < self.shape[0] and 0 <= y + dy < self.shape[1]:
-                    total += self.state[x + dx, y + dy]
-        return total
-
-    def get_next_state(self, x, y):
-        if (self.broken and x in (0, self.shape[0]-1) and
-                y in (0, self.shape[1]-1)):
-            return 1
-        if not self.state[x, y] and self.get_n_neighbours(x, y) == 3:
-            return 1
-        elif self.state[x, y] and self.get_n_neighbours(x, y) not in (2, 3):
-            return 0
-        else:
-            return self.state[x, y]
+    def get_n_neighbours(self):
+        return (self._state[0:-2, 0:-2] + self._state[0:-2, 1:-1] +
+                self._state[0:-2, 2:] + self._state[1:-1, 0:-2] +
+                self._state[1:-1, 2:] + self._state[2:, 0:-2] +
+                self._state[2:, 1:-1] + self._state[2:, 2:])
 
     def step(self, n_steps=1):
         for i in range(n_steps):
-            next_state = self.state.copy()
-            for x in range(self.shape[0]):
-                for y in range(self.shape[1]):
-                    next_state[x, y] = self.get_next_state(x, y)
-            self.state = next_state
+            n_neighbours = self.get_n_neighbours()
+
+            birth = (n_neighbours == 3) & (self._state[1:-1, 1:-1] == 0)
+            survive = (((n_neighbours == 2) | (n_neighbours == 3)) &
+                       (self._state[1:-1, 1:-1] == 1))
+
+            self._state[...] = 0
+            self._state[1:-1, 1:-1][birth | survive] = 1
+            self._set_broken_lights()
 
     @property
     def n_lights_on(self):

@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 
 from day_18 import Game
@@ -12,12 +13,16 @@ initial_state = (".#.#.#\n"
 
 
 def test_parse():
-    assert np.all(Game.parse(initial_state) == np.array([[0, 1, 0, 1, 0, 1],
-                                                         [0, 0, 0, 1, 1, 0],
-                                                         [1, 0, 0, 0, 0, 1],
-                                                         [0, 0, 1, 0, 0, 0],
-                                                         [1, 0, 1, 0, 0, 1],
-                                                         [1, 1, 1, 1, 0, 0]]))
+    assert np.all(Game.parse(initial_state) ==
+                  np.array([[0, 0, 0, 0, 0, 0, 0, 0],
+                            [0, 0, 1, 0, 1, 0, 1, 0],
+                            [0, 0, 0, 0, 1, 1, 0, 0],
+                            [0, 1, 0, 0, 0, 0, 1, 0],
+                            [0, 0, 0, 1, 0, 0, 0, 0],
+                            [0, 1, 0, 1, 0, 0, 1, 0],
+                            [0, 1, 1, 1, 1, 0, 0, 0],
+                            [0, 0, 0, 0, 0, 0, 0, 0]]
+                           ))
 
 
 class TestGame(object):
@@ -34,48 +39,13 @@ class TestGame(object):
         assert self.game.shape == (6, 6)
 
     def test_get_n_neighbours(self):
-        assert self.game.get_n_neighbours(0, 0) == 1
-        assert self.game.get_n_neighbours(0, 1) == 0
-        assert self.game.get_n_neighbours(0, 3) == 2
-        assert self.game.get_n_neighbours(3, 2) == 1
-
-    def test_get_next_state(self):
-        assert self.game.get_next_state(0, 0) == 0
-        assert self.game.get_next_state(0, 1) == 0
-        assert self.game.get_next_state(0, 2) == 1
-        assert self.game.get_next_state(0, 3) == 1
-        assert self.game.get_next_state(0, 4) == 0
-        assert self.game.get_next_state(0, 5) == 0
-        assert self.game.get_next_state(1, 0) == 0
-        assert self.game.get_next_state(1, 1) == 0
-        assert self.game.get_next_state(1, 2) == 1
-        assert self.game.get_next_state(1, 3) == 1
-        assert self.game.get_next_state(1, 4) == 0
-        assert self.game.get_next_state(1, 5) == 1
-        assert self.game.get_next_state(2, 0) == 0
-        assert self.game.get_next_state(2, 1) == 0
-        assert self.game.get_next_state(2, 2) == 0
-        assert self.game.get_next_state(2, 3) == 1
-        assert self.game.get_next_state(2, 4) == 1
-        assert self.game.get_next_state(2, 5) == 0
-        assert self.game.get_next_state(3, 0) == 0
-        assert self.game.get_next_state(3, 1) == 0
-        assert self.game.get_next_state(3, 2) == 0
-        assert self.game.get_next_state(3, 3) == 0
-        assert self.game.get_next_state(3, 4) == 0
-        assert self.game.get_next_state(3, 5) == 0
-        assert self.game.get_next_state(4, 0) == 1
-        assert self.game.get_next_state(4, 1) == 0
-        assert self.game.get_next_state(4, 2) == 0
-        assert self.game.get_next_state(4, 3) == 0
-        assert self.game.get_next_state(4, 4) == 0
-        assert self.game.get_next_state(4, 5) == 0
-        assert self.game.get_next_state(5, 0) == 1
-        assert self.game.get_next_state(5, 1) == 0
-        assert self.game.get_next_state(5, 2) == 1
-        assert self.game.get_next_state(5, 3) == 1
-        assert self.game.get_next_state(5, 4) == 0
-        assert self.game.get_next_state(5, 5) == 0
+        assert np.all(self.game.get_n_neighbours() ==
+                      np.array([[1, 0, 3, 2, 4, 1],
+                                [2, 2, 3, 2, 4, 3],
+                                [0, 2, 2, 3, 3, 1],
+                                [2, 4, 1, 2, 2, 2],
+                                [2, 6, 4, 4, 2, 0],
+                                [2, 4, 3, 2, 2, 1]]))
 
     def test_step_once(self):
         self.game.step()
@@ -115,48 +85,14 @@ class TestBrokenGame(object):
         assert self.game.shape == (6, 6)
 
     def test_get_n_neighbours(self):
-        assert self.game.get_n_neighbours(0, 0) == 1
-        assert self.game.get_n_neighbours(0, 1) == 1
-        assert self.game.get_n_neighbours(0, 3) == 2
-        assert self.game.get_n_neighbours(3, 2) == 1
-
-    def test_get_next_state(self):
-        assert self.game.get_next_state(0, 0) == 1
-        assert self.game.get_next_state(0, 1) == 0
-        assert self.game.get_next_state(0, 2) == 1
-        assert self.game.get_next_state(0, 3) == 1
-        assert self.game.get_next_state(0, 4) == 0
-        assert self.game.get_next_state(0, 5) == 1
-        assert self.game.get_next_state(1, 0) == 1
-        assert self.game.get_next_state(1, 1) == 1
-        assert self.game.get_next_state(1, 2) == 1
-        assert self.game.get_next_state(1, 3) == 1
-        assert self.game.get_next_state(1, 4) == 0
-        assert self.game.get_next_state(1, 5) == 1
-        assert self.game.get_next_state(2, 0) == 0
-        assert self.game.get_next_state(2, 1) == 0
-        assert self.game.get_next_state(2, 2) == 0
-        assert self.game.get_next_state(2, 3) == 1
-        assert self.game.get_next_state(2, 4) == 1
-        assert self.game.get_next_state(2, 5) == 0
-        assert self.game.get_next_state(3, 0) == 0
-        assert self.game.get_next_state(3, 1) == 0
-        assert self.game.get_next_state(3, 2) == 0
-        assert self.game.get_next_state(3, 3) == 0
-        assert self.game.get_next_state(3, 4) == 0
-        assert self.game.get_next_state(3, 5) == 0
-        assert self.game.get_next_state(4, 0) == 1
-        assert self.game.get_next_state(4, 1) == 0
-        assert self.game.get_next_state(4, 2) == 0
-        assert self.game.get_next_state(4, 3) == 0
-        assert self.game.get_next_state(4, 4) == 1
-        assert self.game.get_next_state(4, 5) == 0
-        assert self.game.get_next_state(5, 0) == 1
-        assert self.game.get_next_state(5, 1) == 0
-        assert self.game.get_next_state(5, 2) == 1
-        assert self.game.get_next_state(5, 3) == 1
-        assert self.game.get_next_state(5, 4) == 1
-        assert self.game.get_next_state(5, 5) == 1
+        print(self.game.get_n_neighbours())
+        assert np.all(self.game.get_n_neighbours() ==
+                      np.array([[1, 1, 3, 2, 4, 1],
+                                [3, 3, 3, 2, 4, 3],
+                                [0, 2, 2, 3, 3, 1],
+                                [2, 4, 1, 2, 2, 2],
+                                [2, 6, 4, 4, 3, 1],
+                                [2, 4, 3, 2, 3, 1]]))
 
     def test_step_once(self):
         self.game.step()
