@@ -12,7 +12,6 @@ initial_state = (".#.#.#\n"
 
 
 def test_parse():
-    print(Game.parse(initial_state))
     assert np.all(Game.parse(initial_state) ==
                   np.array([[0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 1, 0, 1, 0, 1, 0],
