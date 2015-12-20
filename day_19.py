@@ -1,5 +1,5 @@
 """
-adventofcode.com/day/19
+http://adventofcode.com/day/19
 
 --- Day 19: Medicine for Rudolph ---
 
