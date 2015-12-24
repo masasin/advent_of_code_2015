@@ -13,10 +13,7 @@ def get_house_n_gifts(unsigned int target, unsigned int gifts_per_house=10,
     limit = (max_number + 1) if max_visits is None else max_visits
 
     for i in range(1, max_number + 1):
-        j = i
-        while j <= max_number and j <= i * limit:
-            houses[j] += gifts_per_house * i
-            j += i
+        houses[j:i*limit:i] += gifts_per_house * i
 
     return np.where(houses >= target)[0][0]
 
